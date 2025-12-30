@@ -8,6 +8,7 @@ export const Colors = {
     border: '#C6C6C8',
     tabBar: '#FFFFFF',
     header: '#FFFFFF',
+    tint: '#007AFF',
   },
   dark: {
     primary: '#0A84FF',
@@ -18,6 +19,7 @@ export const Colors = {
     border: '#38383A',
     tabBar: '#161616',
     header: '#000000',
+    tint: '#0A84FF',
   },
 };
 
