@@ -1,12 +1,26 @@
 import { Tabs } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useColorScheme } from "react-native";
+import { Colors } from "@/constants/Colors";
 
 export default function TabLayout() {
+  const colorScheme = useColorScheme() ?? 'light';
+  const colors = Colors[colorScheme];
+  
   return (
     <Tabs
       screenOptions={{
-        headerShown: true,
-        tabBarActiveTintColor: "#007AFF",
+        headerShown: false,
+        tabBarActiveTintColor: colors.primary,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: colors.tabBar,
+          borderTopWidth: 0,
+        },
+        headerStyle: {
+          backgroundColor: colors.header,
+        },
+        headerTintColor: colors.text,
       }}
     >
       <Tabs.Screen
@@ -15,7 +29,11 @@ export default function TabLayout() {
           title: "Books",
           href: "/",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="book" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="bookshelf"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
