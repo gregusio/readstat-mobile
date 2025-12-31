@@ -1,19 +1,46 @@
-import React from "react";
-import { View, Text, StyleSheet, useColorScheme, Pressable, ScrollView, Image } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, useColorScheme, Pressable, ScrollView, Image, Alert } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/src/constants/Colors";
 import { useBookStore } from "@/src/store/bookStore";
+import { EditBookModal } from "@/src/components/EditBookModal";
 
 export default function BookDetails() {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { bookId } = useLocalSearchParams<{ bookId?: string }>();
   const router = useRouter();
+  const [editModalVisible, setEditModalVisible] = useState(false);
 
   const book = useBookStore((state) =>
     state.books.find((b) => b.id === bookId)
   );
+  const removeBook = useBookStore((state) => state.removeBook);
+
+  const handleDeleteBook = () => {
+    Alert.alert(
+      "Delete Book",
+      `Are you sure you want to delete "${book?.title}"?`,
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => {
+            if (book?.id) {
+              removeBook(book.id);
+              router.back();
+            }
+          },
+          style: "destructive",
+        },
+      ]
+    );
+  };
 
   const renderRow = (label: string, value?: string | number | string[]) => {
     if (value === undefined || value === null) return null;
@@ -45,7 +72,31 @@ export default function BookDetails() {
               <Ionicons name="return-up-back" size={24} color={colors.primary} />
             </Pressable>
           ),
+          headerRight: () => (
+            <View style={styles.headerRight}>
+              <Pressable
+                onPress={() => setEditModalVisible(true)}
+                style={({ pressed }) => [styles.editButton, pressed && { opacity: 0.6 }]}
+              >
+                <Ionicons name="pencil" size={24} color={colors.primary} />
+              </Pressable>
+              <Pressable
+                onPress={handleDeleteBook}
+                style={({ pressed }) => [styles.deleteButton, pressed && { opacity: 0.6 }]}
+              >
+                <Ionicons name="trash" size={24} color={colors.danger} />
+              </Pressable>
+            </View>
+          ),
         }}
+      />
+      <EditBookModal
+        visible={editModalVisible}
+        onClose={() => setEditModalVisible(false)}
+        book={book}
+        textColor={colors.text}
+        backgroundColor={colors.background}
+        tintColor={colors.primary}
       />
       {book ? (
         <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -116,6 +167,18 @@ const styles = StyleSheet.create({
   backButton: {
     paddingHorizontal: 8,
     paddingVertical: 4,
+  },
+  editButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  deleteButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    gap: 8,
   },
   coverPlaceholder: {
     justifyContent: 'center',
