@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '90%',
-    maxHeight: '80%',
+    maxHeight: '85%',
     borderRadius: 12,
     padding: 20,
   },
