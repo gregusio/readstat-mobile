@@ -63,7 +63,7 @@ export default function BookDetails() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: "Books",
+          title: "",
           headerLeft: () => (
             <Pressable
               onPress={() => router.back()}
