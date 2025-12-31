@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Book } from '@/src/constants/Book';
 import { useBookStore } from '@/src/store/bookStore';
 
@@ -34,6 +36,10 @@ export function AddBookModal({
   const [pageCount, setPageCount] = useState('');
   const [status, setStatus] = useState<Book['status']>('not read');
   const [rating, setRating] = useState('');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
+
+  const [tempCoverUrl, setTempCoverUrl] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   const resetForm = () => {
     setTitle('');
@@ -42,6 +48,36 @@ export function AddBookModal({
     setPageCount('');
     setStatus('not read');
     setRating('');
+    setCoverImageUrl('');
+  };
+
+  const handlePickCover = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: 'images',
+      allowsMultipleSelection: false,
+      allowsEditing: true,
+      aspect: [3, 4],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets?.length) {
+      setTempCoverUrl(result.assets[0].uri);
+      setShowPreview(true);
+    }
+  };
+
+  const handleConfirmCover = () => {
+    setCoverImageUrl(tempCoverUrl);
+    setTempCoverUrl('');
+    setShowPreview(false);
+  };
+
+  const handleCancelPreview = () => {
+    setTempCoverUrl('');
+    setShowPreview(false);
   };
 
   const handleAddBook = () => {
@@ -55,6 +91,7 @@ export function AddBookModal({
       pageCount: pageCount ? parseInt(pageCount) : undefined,
       status,
       rating: rating ? parseFloat(rating) : undefined,
+      coverImageUrl: coverImageUrl.trim() || undefined,
     };
 
     addBook(newBook);
@@ -74,10 +111,61 @@ export function AddBookModal({
       transparent={true}
       onRequestClose={handleClose}
     >
+      <Modal
+        visible={showPreview}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCancelPreview}
+      >
+        <View style={styles.previewOverlay}>
+          <View style={[styles.previewContainer, { backgroundColor }]}>
+            <Text style={[styles.previewTitle, { color: textColor }]}>Confirm Cover Image</Text>
+            {tempCoverUrl && (
+              <Image
+                source={{ uri: tempCoverUrl }}
+                style={styles.previewImage}
+                resizeMode="cover"
+              />
+            )}
+            <View style={styles.previewButtons}>
+              <TouchableOpacity
+                style={[styles.previewButton, styles.cancelButton, { borderColor: textColor + '40' }]}
+                onPress={handleCancelPreview}
+              >
+                <Text style={[styles.buttonText, { color: textColor }]}>Choose Again</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.previewButton, { backgroundColor: tintColor }]}
+                onPress={handleConfirmCover}
+              >
+                <Text style={[styles.buttonText, { color: '#fff' }]}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { backgroundColor }]}>
           <ScrollView>
             <Text style={[styles.modalTitle, { color: textColor }]}>Add New Book</Text>
+
+            <Text style={[styles.label, { color: textColor }]}>Cover Image URL</Text>
+            <TextInput
+              style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
+              value={coverImageUrl}
+              onChangeText={setCoverImageUrl}
+              placeholder="https://..."
+              placeholderTextColor={textColor + '60'}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <TouchableOpacity
+              style={[styles.pickButton, { borderColor: textColor + '40', backgroundColor: tintColor }]}
+              onPress={handlePickCover}
+            >
+              <Text style={[styles.pickButtonText, { color: '#fff' }]}>Pick from photos</Text>
+            </TouchableOpacity>
 
             <Text style={[styles.label, { color: textColor }]}>Title *</Text>
             <TextInput
@@ -197,6 +285,41 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  previewContainer: {
+    width: '85%',
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+  },
+  previewTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  previewImage: {
+    width: '100%',
+    height: 400,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  previewButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  previewButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+  },
   modalContent: {
     width: '90%',
     maxHeight: '85%',
@@ -241,6 +364,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 24,
     gap: 12,
+  },
+  pickButton: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+  },
+  pickButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   button: {
     flex: 1,
