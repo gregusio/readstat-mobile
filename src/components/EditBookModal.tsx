@@ -49,7 +49,6 @@ export function EditBookModal({
   const [tempCoverUrl, setTempCoverUrl] = useState('');
   const [showPreview, setShowPreview] = useState(false);
 
-  // Initialize form with book data when modal opens
   useEffect(() => {
     if (visible && book) {
       setTitle(book.title || '');
