@@ -48,20 +48,28 @@ export default function BookDetails() {
         }}
       />
       {book ? (
-        <ScrollView>
-          {book.coverImageUrl ? (
-            <Image
-              source={{ uri: book.coverImageUrl }}
-              style={styles.cover}
-              resizeMode="cover"
-            />
-          ) : null}
-          <Text style={[styles.title, { color: colors.text }]}>{book.title}</Text>
-          {book.authors?.length ? (
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-              {book.authors.join(", ")}
-            </Text>
-          ) : null}
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.heroRow}>
+            {book.coverImageUrl ? (
+              <Image
+                source={{ uri: book.coverImageUrl }}
+                style={styles.cover}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={[styles.cover, styles.coverPlaceholder]}>
+                <Text style={styles.coverPlaceholderText}>No Cover</Text>
+              </View>
+            )}
+            <View style={styles.heroText}>
+              <Text style={[styles.title, { color: colors.text }]}>{book.title}</Text>
+              {book.authors?.length ? (
+                <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+                  {book.authors.join(", ")}
+                </Text>
+              ) : null}
+            </View>
+          </View>
 
           {book.description ? (
             <Text style={[styles.sectionLabel, { color: colors.textSecondary }]}>Description</Text>
@@ -102,9 +110,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  scrollContent: {
+    paddingBottom: 32,
+  },
   backButton: {
     paddingHorizontal: 8,
     paddingVertical: 4,
+  },
+  coverPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  coverPlaceholderText: {
+    fontSize: 16,
+    color: '#999',
   },
   title: {
     fontSize: 24,
@@ -148,10 +168,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cover: {
-    width: "100%",
-    height: 220,
+    width: 150,
+    height: 200,
     borderRadius: 10,
-    marginBottom: 16,
+    marginRight: 16,
     backgroundColor: "#ddd",
+  },
+  heroRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  heroText: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
