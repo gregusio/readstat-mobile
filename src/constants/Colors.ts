@@ -9,6 +9,7 @@ export const Colors = {
     tabBar: '#FFFFFF',
     header: '#FFFFFF',
     tint: '#007AFF',
+    danger: '#FF3B30',
   },
   dark: {
     primary: '#0A84FF',
@@ -20,6 +21,7 @@ export const Colors = {
     tabBar: '#161616',
     header: '#000000',
     tint: '#0A84FF',
+    danger: '#FF453A',
   },
 };
 
