@@ -1,15 +1,19 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Book } from '@/src/constants/Book';
 
 interface BookCardProps {
   book: Book;
   textColor: string;
   backgroundColor: string;
+  onPress?: () => void;
 }
 
-export function BookCard({ book, textColor, backgroundColor }: BookCardProps) {
+export function BookCard({ book, textColor, backgroundColor, onPress }: BookCardProps) {
   return (
-    <View style={[styles.bookCard, { backgroundColor, borderColor: textColor + '20' }]}>
+    <Pressable 
+      style={[styles.bookCard, { backgroundColor, borderColor: textColor + '20' }]}
+      onPress={onPress}
+    >
       <Text style={[styles.title, { color: textColor }]}>
         {book.title || 'Untitled'}
       </Text>
@@ -28,7 +32,7 @@ export function BookCard({ book, textColor, backgroundColor }: BookCardProps) {
           ⭐ {book.rating}/5
         </Text>
       )}
-    </View>
+    </Pressable>
   );
 }
 

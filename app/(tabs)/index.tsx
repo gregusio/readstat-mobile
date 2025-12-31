@@ -6,19 +6,26 @@ import { useState } from "react";
 import { BookCard } from "@/src/components/BookCard";
 import { AddBookModal } from "@/src/components/AddBookModal";
 import { FloatingActionButton } from "@/src/components/FloatingActionButton";
+import { useRouter } from "expo-router";
 
 export default function Index() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
   const books = useBookStore((state) => state.books);
+  const router = useRouter();
   
   const [showModal, setShowModal] = useState(false);
+
+  const handleBookPress = (book: Book) => {
+    router.push(`/book/${book.id}`);
+  };
 
   const renderBook = ({ item }: { item: Book }) => (
     <BookCard
       book={item}
       textColor={colors.text}
       backgroundColor={colors.background}
+      onPress={() => handleBookPress(item)}
     />
   );
 
