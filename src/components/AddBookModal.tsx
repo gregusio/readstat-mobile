@@ -147,8 +147,9 @@ export function AddBookModal({
 
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { backgroundColor }]}>
-          <ScrollView>
-            <Text style={[styles.modalTitle, { color: textColor }]}>Add New Book</Text>
+          <View style={styles.modalBody}>
+            <ScrollView style={styles.formScroll} contentContainerStyle={styles.formContent}>
+              <Text style={[styles.modalTitle, { color: textColor }]}>Add New Book</Text>
 
             <Text style={[styles.label, { color: textColor }]}>Cover Image URL</Text>
             <TextInput
@@ -256,22 +257,25 @@ export function AddBookModal({
               />
               </>
             )}
+            </ScrollView>
 
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton, { borderColor: textColor + '40' }]}
-                onPress={handleClose}
-              >
-                <Text style={[styles.buttonText, { color: textColor }]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.addButton, { backgroundColor: tintColor }]}
-                onPress={handleAddBook}
-              >
-                <Text style={styles.buttonText}>Add Book</Text>
-              </TouchableOpacity>
+            <View style={styles.footer}>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton, { borderColor: textColor + '40' }]}
+                  onPress={handleClose}
+                >
+                  <Text style={[styles.buttonText, { color: textColor }]}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.addButton, { backgroundColor: tintColor }]}
+                  onPress={handleAddBook}
+                >
+                  <Text style={styles.buttonText}>Add Book</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </ScrollView>
+          </View>
         </View>
       </View>
     </Modal>
@@ -296,6 +300,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     alignItems: 'center',
+  },
+  modalBody: {
+    flex: 1,
+  },
+  formContent: {
+    paddingBottom: 32,
   },
   previewTitle: {
     fontSize: 20,
@@ -323,8 +333,12 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     maxHeight: '85%',
+    flex: 1,
     borderRadius: 12,
     padding: 20,
+  },
+  formScroll: {
+    flex: 1,
   },
   modalTitle: {
     fontSize: 24,
@@ -362,8 +376,14 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 24,
     gap: 12,
+  },
+  footer: {
+    paddingTop: 12,
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#00000010',
+    backgroundColor: 'transparent',
   },
   pickButton: {
     marginTop: 8,

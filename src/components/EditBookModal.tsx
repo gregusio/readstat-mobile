@@ -184,9 +184,10 @@ export function EditBookModal({
       </Modal>
 
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor }]}>
-          <ScrollView>
-            <Text style={[styles.modalTitle, { color: textColor }]}>Edit Book</Text>
+        <View style={[styles.modalContent, { backgroundColor }]}> 
+          <View style={styles.modalBody}>
+            <ScrollView style={styles.formScroll} contentContainerStyle={styles.formContent}>
+              <Text style={[styles.modalTitle, { color: textColor }]}>Edit Book</Text>
 
             <Text style={[styles.label, { color: textColor }]}>Cover Image URL</Text>
             <TextInput
@@ -329,22 +330,25 @@ export function EditBookModal({
                 />
               </>
             )}
+            </ScrollView>
 
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton, { borderColor: textColor + '40' }]}
-                onPress={handleClose}
-              >
-                <Text style={[styles.buttonText, { color: textColor }]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.addButton, { backgroundColor: tintColor }]}
-                onPress={handleEditBook}
-              >
-                <Text style={styles.buttonText}>Save Changes</Text>
-              </TouchableOpacity>
+            <View style={styles.footer}>
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton, { borderColor: textColor + '40' }]}
+                  onPress={handleClose}
+                >
+                  <Text style={[styles.buttonText, { color: textColor }]}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.addButton, { backgroundColor: tintColor }]}
+                  onPress={handleEditBook}
+                >
+                  <Text style={styles.buttonText}>Save Changes</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </ScrollView>
+          </View>
         </View>
       </View>
     </Modal>
@@ -396,8 +400,18 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     maxHeight: '85%',
+    flex: 1,
     borderRadius: 12,
     padding: 20,
+  },
+  modalBody: {
+    flex: 1,
+  },
+  formScroll: {
+    flex: 1,
+  },
+  formContent: {
+    paddingBottom: 32,
   },
   modalTitle: {
     fontSize: 24,
@@ -435,8 +449,13 @@ const styles = StyleSheet.create({
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 24,
     gap: 12,
+  },
+  footer: {
+    paddingTop: 12,
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#00000010',
   },
   pickButton: {
     marginTop: 8,
