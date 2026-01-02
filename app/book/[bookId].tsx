@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, useColorScheme, Pressable, ScrollView, Image, Alert } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/src/constants/Colors";
-import { useBookStore } from "@/src/store/bookStore";
-import { EditBookModal } from "@/src/components/EditBookModal";
+import { Colors } from "@/constants/Colors";
+import { useBookStore } from "@/hooks/bookStore";
+import { EditBookModal } from "@/components/EditBookModal";
 
 export default function BookDetails() {
   const colorScheme = useColorScheme() ?? "light";

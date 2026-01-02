@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
-import { Book } from '@/src/constants/Book';
+import { Book } from '@/constants/Book';
 
 interface BookCardProps {
   book: Book;

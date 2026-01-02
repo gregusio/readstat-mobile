@@ -1,11 +1,11 @@
-import { Colors } from "@/src/constants/Colors";
+import { Colors } from "@/constants/Colors";
 import { Text, useColorScheme, View, FlatList, StyleSheet } from "react-native";
-import { useBookStore } from "@/src/store/bookStore";
-import { Book } from "@/src/constants/Book";
+import { useBookStore } from "@/hooks/bookStore";
+import { Book } from "@/constants/Book";
 import { useState } from "react";
-import { BookCard } from "@/src/components/BookCard";
-import { AddBookModal } from "@/src/components/AddBookModal";
-import { FloatingActionButton } from "@/src/components/FloatingActionButton";
+import { BookCard } from "@/components/BookCard";
+import { AddBookModal } from "@/components/AddBookModal";
+import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { useRouter } from "expo-router";
 
 export default function Index() {

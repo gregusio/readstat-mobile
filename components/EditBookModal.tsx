@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,44 +10,76 @@ import {
   Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { Book } from '@/src/constants/Book';
-import { useBookStore } from '@/src/store/bookStore';
+import { Book } from '@/constants/Book';
+import { useBookStore } from '@/hooks/bookStore';
 
-interface AddBookModalProps {
+interface EditBookModalProps {
   visible: boolean;
   onClose: () => void;
+  book: Book | undefined;
   textColor: string;
   backgroundColor: string;
   tintColor: string;
 }
 
-export function AddBookModal({
+export function EditBookModal({
   visible,
   onClose,
+  book,
   textColor,
   backgroundColor,
   tintColor,
-}: AddBookModalProps) {
-  const addBook = useBookStore((state) => state.addBook);
+}: EditBookModalProps) {
+  const updateBook = useBookStore((state) => state.updateBook);
 
   const [title, setTitle] = useState('');
   const [authors, setAuthors] = useState('');
   const [isbn, setIsbn] = useState('');
+  const [language, setLanguage] = useState('');
   const [pageCount, setPageCount] = useState('');
+  const [genres, setGenres] = useState('');
+  const [description, setDescription] = useState('');
   const [status, setStatus] = useState<Book['status']>('not read');
   const [rating, setRating] = useState('');
+  const [dateStarted, setDateStarted] = useState('');
+  const [dateFinished, setDateFinished] = useState('');
+  const [review, setReview] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
 
   const [tempCoverUrl, setTempCoverUrl] = useState('');
   const [showPreview, setShowPreview] = useState(false);
 
+  useEffect(() => {
+    if (visible && book) {
+      setTitle(book.title || '');
+      setAuthors(book.authors?.join(', ') || '');
+      setIsbn(book.isbn || '');
+      setLanguage(book.language || '');
+      setPageCount(book.pageCount ? book.pageCount.toString() : '');
+      setGenres(book.genres?.join(', ') || '');
+      setDescription(book.description || '');
+      setStatus(book.status || 'not read');
+      setRating(book.rating ? book.rating.toString() : '');
+      setDateStarted(book.dateStarted || '');
+      setDateFinished(book.dateFinished || '');
+      setReview(book.review || '');
+      setCoverImageUrl(book.coverImageUrl || '');
+    }
+  }, [visible, book]);
+
   const resetForm = () => {
     setTitle('');
     setAuthors('');
     setIsbn('');
+    setLanguage('');
     setPageCount('');
+    setGenres('');
+    setDescription('');
     setStatus('not read');
     setRating('');
+    setDateStarted('');
+    setDateFinished('');
+    setReview('');
     setCoverImageUrl('');
   };
 
@@ -80,21 +112,26 @@ export function AddBookModal({
     setShowPreview(false);
   };
 
-  const handleAddBook = () => {
-    if (!title.trim()) return;
+  const handleEditBook = () => {
+    if (!title.trim() || !book?.id) return;
 
-    const newBook: Book = {
-      id: Date.now().toString(),
+    const updatedBook: Partial<Book> = {
       title: title.trim(),
       authors: authors.trim() ? authors.split(',').map((a) => a.trim()) : undefined,
       isbn: isbn.trim() || undefined,
+      language: language.trim() || undefined,
       pageCount: pageCount ? parseInt(pageCount) : undefined,
+      genres: genres.trim() ? genres.split(',').map((g) => g.trim()) : undefined,
+      description: description.trim() || undefined,
       status,
       rating: rating ? parseFloat(rating) : undefined,
+      dateStarted: dateStarted.trim() || undefined,
+      dateFinished: dateFinished.trim() || undefined,
+      review: review.trim() || undefined,
       coverImageUrl: coverImageUrl.trim() || undefined,
     };
 
-    addBook(newBook);
+    updateBook(book.id, updatedBook);
     resetForm();
     onClose();
   };
@@ -146,10 +183,10 @@ export function AddBookModal({
       </Modal>
 
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor }]}>
+        <View style={[styles.modalContent, { backgroundColor }]}> 
           <View style={styles.modalBody}>
             <ScrollView style={styles.formScroll} contentContainerStyle={styles.formContent}>
-              <Text style={[styles.modalTitle, { color: textColor }]}>Add New Book</Text>
+              <Text style={[styles.modalTitle, { color: textColor }]}>Edit Book</Text>
 
             <Text style={[styles.label, { color: textColor }]}>Cover Image URL</Text>
             <TextInput
@@ -195,6 +232,15 @@ export function AddBookModal({
               placeholderTextColor={textColor + '60'}
             />
 
+            <Text style={[styles.label, { color: textColor }]}>Language</Text>
+            <TextInput
+              style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
+              value={language}
+              onChangeText={setLanguage}
+              placeholder="Enter language"
+              placeholderTextColor={textColor + '60'}
+            />
+
             <Text style={[styles.label, { color: textColor }]}>Page Count</Text>
             <TextInput
               style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
@@ -203,6 +249,26 @@ export function AddBookModal({
               placeholder="Enter page count"
               placeholderTextColor={textColor + '60'}
               keyboardType="numeric"
+            />
+
+            <Text style={[styles.label, { color: textColor }]}>Genres (comma separated)</Text>
+            <TextInput
+              style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
+              value={genres}
+              onChangeText={setGenres}
+              placeholder="e.g., Fantasy, Fiction"
+              placeholderTextColor={textColor + '60'}
+            />
+
+            <Text style={[styles.label, { color: textColor }]}>Description</Text>
+            <TextInput
+              style={[styles.input, { color: textColor, borderColor: textColor + '40' }, styles.reviewInput]}
+              value={description}
+              onChangeText={setDescription}
+              placeholder="Enter book description"
+              placeholderTextColor={textColor + '60'}
+              multiline={true}
+              numberOfLines={3}
             />
 
             <Text style={[styles.label, { color: textColor }]}>Status</Text>
@@ -224,37 +290,43 @@ export function AddBookModal({
 
             {status === 'read' && (
               <>
-              <Text style={[styles.label, { color: textColor }]}>Rating (0-5)</Text>
-              <TextInput
-                style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
-                value={rating}
-                onChangeText={setRating}
-                placeholder="Enter rating"
-                placeholderTextColor={textColor + '60'}
-                keyboardType="decimal-pad"
-              />
-              <Text style={[styles.label, { color: textColor }]}>Date Started</Text>
-              <TextInput
-                style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor={textColor + '60'}
-              />
+                <Text style={[styles.label, { color: textColor }]}>Rating (0-5)</Text>
+                <TextInput
+                  style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
+                  value={rating}
+                  onChangeText={setRating}
+                  placeholder="Enter rating"
+                  placeholderTextColor={textColor + '60'}
+                  keyboardType="decimal-pad"
+                />
+                <Text style={[styles.label, { color: textColor }]}>Date Started</Text>
+                <TextInput
+                  style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
+                  value={dateStarted}
+                  onChangeText={setDateStarted}
+                  placeholder="YYYY-MM-DD"
+                  placeholderTextColor={textColor + '60'}
+                />
 
-              <Text style={[styles.label, { color: textColor }]}>Date Finished</Text>
-              <TextInput
-                style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor={textColor + '60'}
-              />
+                <Text style={[styles.label, { color: textColor }]}>Date Finished</Text>
+                <TextInput
+                  style={[styles.input, { color: textColor, borderColor: textColor + '40' }]}
+                  value={dateFinished}
+                  onChangeText={setDateFinished}
+                  placeholder="YYYY-MM-DD"
+                  placeholderTextColor={textColor + '60'}
+                />
 
-              <Text style={[styles.label, { color: textColor }]}>Review</Text>
-              <TextInput
-                style={[styles.input, { color: textColor, borderColor: textColor + '40' }, styles.reviewInput]}
-                placeholder="Write your review"
-                placeholderTextColor={textColor + '60'}
-                multiline={true}
-                numberOfLines={4}
-              />
+                <Text style={[styles.label, { color: textColor }]}>Review</Text>
+                <TextInput
+                  style={[styles.input, { color: textColor, borderColor: textColor + '40' }, styles.reviewInput]}
+                  value={review}
+                  onChangeText={setReview}
+                  placeholder="Write your review"
+                  placeholderTextColor={textColor + '60'}
+                  multiline={true}
+                  numberOfLines={4}
+                />
               </>
             )}
             </ScrollView>
@@ -269,9 +341,9 @@ export function AddBookModal({
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.addButton, { backgroundColor: tintColor }]}
-                  onPress={handleAddBook}
+                  onPress={handleEditBook}
                 >
-                  <Text style={styles.buttonText}>Add Book</Text>
+                  <Text style={styles.buttonText}>Save Changes</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -300,12 +372,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     alignItems: 'center',
-  },
-  modalBody: {
-    flex: 1,
-  },
-  formContent: {
-    paddingBottom: 32,
   },
   previewTitle: {
     fontSize: 20,
@@ -337,8 +403,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
   },
+  modalBody: {
+    flex: 1,
+  },
   formScroll: {
     flex: 1,
+  },
+  formContent: {
+    paddingBottom: 32,
   },
   modalTitle: {
     fontSize: 24,
@@ -383,7 +455,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderTopWidth: 1,
     borderTopColor: '#00000010',
-    backgroundColor: 'transparent',
   },
   pickButton: {
     marginTop: 8,

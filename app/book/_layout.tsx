@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { useColorScheme } from "react-native";
-import { Colors } from "@/src/constants/Colors";
+import { Colors } from "@/constants/Colors";
 
 export default function BookStackLayout() {
   const colorScheme = useColorScheme() ?? "light";
